@@ -81,7 +81,7 @@ const onInit = (e) => {
 const onSlideChange = (e) => {
   console.log('slide changed');
   const currentVideo = videoRefs.value[e.detail[0].realIndex];
-  currentVideo.setMuted(false);
+  //currentVideo.setMuted(false);
   currentVideo.play();
   const currentIndex = e.detail[0].realIndex;
   currentVideo.on('ended', () => {
@@ -89,7 +89,7 @@ const onSlideChange = (e) => {
     const nextVideo = videoRefs.value[nextIndex];
     if (nextVideo) {
       currentVideo.pause();
-      nextVideo.setMuted(false);
+      //nextVideo.setMuted(false);
       nextVideo.play();
       swiperEl.value.swiper.slideNext();
     } else {
@@ -101,7 +101,7 @@ const onSlideChange = (e) => {
 const playVideo = () => {
   if (videoRefs.value.length > 0) {
     const firstVideo = videoRefs.value[0];
-    firstVideo.setMuted(false);
+    //firstVideo.setMuted(false);
     firstVideo.play();
     firstVideo.on('ended', () => {
       swiperEl.value.swiper.slideNext();
