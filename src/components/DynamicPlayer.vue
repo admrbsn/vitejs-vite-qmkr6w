@@ -145,24 +145,21 @@ onMounted(() => {
     });
     videoRefs.value.push(markRaw(player));
 
-    player.on('ended', async () => {
-  if (isPlaying.value) {
-    isPlaying.value = false;
-    const nextIndex = (index + 1) % slides.length;
-    const nextVideo = videoRefs.value[nextIndex];
-    if (nextVideo) {
-      // Mimic slide change before the video actually ends
-      swiperEl.value.swiper.slideNext();
-      await new Promise(resolve => setTimeout(resolve, 100)); // delay for the slide change
-      nextVideo.setMuted(isMuted.value);
-      nextVideo.play();
-      isPlaying.value = true;
-    } else {
-      swiperEl.value.swiper.slideTo(0);
-    }
-  }
-});
-
+    player.on('ended', () => {
+      if (isPlaying.value) {
+        isPlaying.value = false;
+        const nextIndex = (index + 1) % slides.length;
+        const nextVideo = videoRefs.value[nextIndex];
+        if (nextVideo) {
+          nextVideo.setMuted(isMuted.value);
+          nextVideo.play();
+          isPlaying.value = true;
+          swiperEl.value.swiper.slideNext();
+        } else {
+          swiperEl.value.swiper.slideTo(0);
+        }
+      }
+    });
   });
 });
 
