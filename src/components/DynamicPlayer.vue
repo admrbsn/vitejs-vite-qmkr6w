@@ -41,18 +41,19 @@
       <swiper-slide
         v-for="(slide, index) in slides"
         :key="index"
+        :class="{ 'has-started-playing': hasStartedPlaying }"
         class="-mt-16"
       >
         <div :id="'video-' + index">
           <button
             @click="togglePlay"
-            :class="{ 'hide-unless-hovered': hasStartedPlaying }"
             class="
+              play-pause
               absolute
               top-1/2
               right-0
               left-0
-              flex
+              hidden
               w-16
               h-16
               items-center
@@ -194,21 +195,14 @@ const togglePlay = () => {
   if (swiperEl.value && swiperEl.value.swiper) {
     const currentVideo = videoRefs.value[swiperEl.value.swiper.realIndex];
     if (currentVideo) {
-      currentVideo
-        .getPaused()
-        .then((paused) => {
-          if (paused) {
-            currentVideo.play();
-            isPlaying.value = true;
-            hasStartedPlaying.value = true;
-          } else {
-            currentVideo.pause();
-            isPlaying.value = false;
-          }
-        })
-        .catch((error) => {
-          console.log('Error during video playback:', error);
-        });
+      if (isPlaying.value) {
+        currentVideo.pause();
+        isPlaying.value = false;
+      } else {
+        playVideo(currentVideo);
+        isPlaying.value = true;
+        hasStartedPlaying.value = true;
+      }
     }
   }
 };
@@ -218,10 +212,10 @@ const toggleMute = () => {
     const currentVideo = videoRefs.value[swiperEl.value.swiper.realIndex];
     if (currentVideo) {
       if (isMuted.value) {
-        currentVideo.setVolume(1);
+        currentVideo.setVolume(1); // TODO: for some reason, isMuted wasn't working with the vimeo player api
         isMuted.value = false;
       } else {
-        currentVideo.setVolume(0);
+        currentVideo.setVolume(0); // TODO: for some reason, isMuted wasn't working with the vimeo player api
         isMuted.value = true;
       }
       showOverlay.value = window.innerWidth < 768 && isMuted.value;
@@ -232,15 +226,15 @@ const toggleMute = () => {
 const onSlideChange = (e) => {
   console.log('slide changed');
   const currentVideo = videoRefs.value[e.detail[0].realIndex];
-  currentVideo.setVolume(isMuted.value ? 0 : 1);
   playVideo(currentVideo);
+  isPlaying.value = true;
   hasStartedPlaying.value = true;
   const currentIndex = e.detail[0].realIndex;
   currentVideo.on('ended', () => {
     const nextIndex = currentIndex + 1;
     const nextVideo = videoRefs.value[nextIndex];
     if (nextVideo) {
-      nextVideo.setVolume(isMuted.value ? 0 : 1);
+      currentVideo.setVolume(0); // TODO: for some reason, isMuted wasn't working with the vimeo player api
       playVideo(nextVideo);
       swiperEl.value.swiper.slideNext();
     } else {
@@ -297,10 +291,14 @@ iframe {
   border-style: solid;
   border-color: transparent transparent white transparent;
 }
-.hide-unless-hovered {
+.play-pause {
+  display: none;
+}
+.has-started-playing .play-pause {
+  display: flex !important;
   opacity: 0;
 }
-swiper-slide > div:hover .hide-unless-hovered {
+swiper-slide.has-started-playing > div:hover .play-pause {
   opacity: 1;
 }
 </style>
