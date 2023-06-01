@@ -150,7 +150,7 @@ onMounted(() => {
         const nextIndex = (index + 1) % slides.length;
         const nextVideo = videoRefs.value[nextIndex];
         if (nextVideo) {
-          nextVideo.setVolume(isMuted.value ? 0 : 1);
+          nextVideo.setMuted(isMuted.value);
           nextVideo.play();
           isPlaying.value = true;
           swiperEl.value.swiper.slideNext();
@@ -174,21 +174,6 @@ const onInit = (e) => {
   console.log('swiper initialized');
 };
 
-const playVideo = (video) => {
-  if (video) {
-    video.setVolume(isMuted.value ? 0 : 1);
-    video.play().catch((error) => {
-      if (
-        error.name === 'NotAllowedError' ||
-        error.name === 'NotSupportedError'
-      ) {
-        video.setVolume(0);
-        video.play();
-      }
-    });
-  }
-};
-
 const togglePlay = () => {
   if (swiperEl.value && swiperEl.value.swiper) {
     const currentVideo = videoRefs.value[swiperEl.value.swiper.realIndex];
@@ -197,7 +182,9 @@ const togglePlay = () => {
         currentVideo.pause();
         isPlaying.value = false;
       } else {
-        playVideo(currentVideo);
+        currentVideo.setVolume(1);
+        isMuted.value = false;
+        currentVideo.play();
         isPlaying.value = true;
         hasStartedPlaying.value = true;
       }
@@ -224,7 +211,8 @@ const toggleMute = () => {
 const onSlideChange = (e) => {
   console.log('slide changed');
   const currentVideo = videoRefs.value[e.detail[0].realIndex];
-  playVideo(currentVideo);
+  currentVideo.setVolume(isMuted.value ? 0 : 1);
+  currentVideo.play();
   hasStartedPlaying.value = true;
   const currentIndex = e.detail[0].realIndex;
   currentVideo.on('ended', () => {
@@ -232,7 +220,8 @@ const onSlideChange = (e) => {
     const nextVideo = videoRefs.value[nextIndex];
     if (nextVideo) {
       currentVideo.setVolume(0); // TODO: for some reason, isMuted wasn't working with the vimeo player api
-      playVideo(nextVideo);
+      nextVideo.setVolume(isMuted.value ? 0 : 1); // TODO: for some reason, isMuted wasn't working with the vimeo player api
+      nextVideo.play();
       swiperEl.value.swiper.slideNext();
     } else {
       swiperEl.value.swiper.slideTo(0);
