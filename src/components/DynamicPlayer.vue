@@ -125,6 +125,7 @@ onMounted(() => {
         :root {--swiper-theme-color: #fff;}
         swiper-container {height:100%;background-color:#202124;}
         swiper-slide {display:flex;align-items:center;justify-content:center;color:#fff;}
+        .swiper-button-next,.swiper-button-prev {z-index: 9;}
       `,
     ],
   };
@@ -193,27 +194,21 @@ const togglePlay = () => {
   if (swiperEl.value && swiperEl.value.swiper) {
     const currentVideo = videoRefs.value[swiperEl.value.swiper.realIndex];
     if (currentVideo) {
-      if (isPlaying.value) {
-        currentVideo.pause();
-        isPlaying.value = false;
-      } else {
-        playVideo(currentVideo);
-        isPlaying.value = true;
-        hasStartedPlaying.value = true;
-
-        const currentIndex = swiperEl.value.swiper.realIndex;
-        currentVideo.on('ended', () => {
-          const nextIndex = currentIndex + 1;
-          const nextVideo = videoRefs.value[nextIndex];
-          if (nextVideo) {
-            currentVideo.setVolume(0); // TODO: for some reason, isMuted wasn't working with the vimeo player api
-            playVideo(nextVideo);
-            swiperEl.value.swiper.slideNext();
+      currentVideo
+        .getPaused()
+        .then((paused) => {
+          if (paused) {
+            currentVideo.play();
+            isPlaying.value = true;
+            hasStartedPlaying.value = true;
           } else {
-            swiperEl.value.swiper.slideTo(0);
+            currentVideo.pause();
+            isPlaying.value = false;
           }
+        })
+        .catch((error) => {
+          console.log('Error during video playback:', error);
         });
-      }
     }
   }
 };
@@ -223,10 +218,10 @@ const toggleMute = () => {
     const currentVideo = videoRefs.value[swiperEl.value.swiper.realIndex];
     if (currentVideo) {
       if (isMuted.value) {
-        currentVideo.setVolume(1); // TODO: for some reason, isMuted wasn't working with the vimeo player api
+        currentVideo.setVolume(1);
         isMuted.value = false;
       } else {
-        currentVideo.setVolume(0); // TODO: for some reason, isMuted wasn't working with the vimeo player api
+        currentVideo.setVolume(0);
         isMuted.value = true;
       }
       showOverlay.value = window.innerWidth < 768 && isMuted.value;
@@ -237,6 +232,7 @@ const toggleMute = () => {
 const onSlideChange = (e) => {
   console.log('slide changed');
   const currentVideo = videoRefs.value[e.detail[0].realIndex];
+  currentVideo.setVolume(isMuted.value ? 0 : 1);
   playVideo(currentVideo);
   hasStartedPlaying.value = true;
   const currentIndex = e.detail[0].realIndex;
@@ -244,7 +240,7 @@ const onSlideChange = (e) => {
     const nextIndex = currentIndex + 1;
     const nextVideo = videoRefs.value[nextIndex];
     if (nextVideo) {
-      currentVideo.setVolume(0); // TODO: for some reason, isMuted wasn't working with the vimeo player api
+      nextVideo.setVolume(isMuted.value ? 0 : 1);
       playVideo(nextVideo);
       swiperEl.value.swiper.slideNext();
     } else {
@@ -303,9 +299,6 @@ iframe {
 }
 .hide-unless-hovered {
   opacity: 0;
-}
-swiper-slide {
-  background-color: hotpink;
 }
 swiper-slide > div:hover .hide-unless-hovered {
   opacity: 1;
