@@ -43,6 +43,13 @@
         :key="index"
         class="-mt-16"
       >
+        <iframe
+          src="https://olafwempe.com/mp3/silence/silence.mp3"
+          type="audio/mp3"
+          allow="autoplay"
+          id="audio"
+          style="display: none"
+        ></iframe>
         <div :id="'video-' + index">
           <button
             @click="togglePlay"
