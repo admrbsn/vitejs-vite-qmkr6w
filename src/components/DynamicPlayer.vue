@@ -182,7 +182,7 @@ const playVideo = (video) => {
         error.name === 'NotAllowedError' ||
         error.name === 'NotSupportedError'
       ) {
-        video.setVolume(0);
+        //video.setVolume(0);
         video.play();
       }
     });
@@ -197,11 +197,9 @@ const togglePlay = () => {
         currentVideo.pause();
         isPlaying.value = false;
       } else {
-        setTimeout(() => {
-          playVideo(currentVideo);
-          isPlaying.value = true;
-          hasStartedPlaying.value = true;
-        }, 100);
+        playVideo(currentVideo);
+        isPlaying.value = true;
+        hasStartedPlaying.value = true;
       }
     }
   }
