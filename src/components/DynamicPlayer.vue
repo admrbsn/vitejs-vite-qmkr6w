@@ -43,27 +43,34 @@
         :key="index"
         class="-mt-16"
       >
-        <div :id="'video-' + index"></div>
-        <button
-          @click="togglePlay"
-          class="
-            absolute
-            flex
-            w-16
-            h-16
-            items-center
-            justify-center
-            bg-white
-            rounded-full
-          "
-        >
-          <img
-            :src="isPlaying ? pauseImage : playImage"
-            class="w-8 h-8"
-            :class="{ 'ml-1.5': !isPlaying }"
-            alt="Play/Pause Button"
-          />
-        </button>
+        <div :id="'video-' + index">
+          <button
+            @click="togglePlay"
+            :class="{ 'hide-unless-hovered': hasStartedPlaying }"
+            class="
+              absolute
+              top-1/2
+              right-0
+              left-0
+              flex
+              w-16
+              h-16
+              items-center
+              justify-center
+              m-auto
+              bg-white
+              rounded-full
+              -translate-y-1/2
+            "
+          >
+            <img
+              :src="isPlaying ? pauseImage : playImage"
+              class="w-8 h-8"
+              :class="{ 'ml-1.5': !isPlaying }"
+              alt="Play/Pause Button"
+            />
+          </button>
+        </div>
       </swiper-slide>
     </swiper-container>
   </div>
@@ -89,6 +96,7 @@ const swiperEl = ref(null);
 const videoRefs = ref([]);
 const isPlaying = ref(false);
 const isMuted = ref(true);
+const hasStartedPlaying = ref(false);
 const slides = [
   {
     vimeoId: '823050002',
@@ -178,6 +186,7 @@ const togglePlay = () => {
         isMuted.value = false;
         currentVideo.play();
         isPlaying.value = true;
+        hasStartedPlaying.value = true;
       }
     }
   }
@@ -204,6 +213,7 @@ const onSlideChange = (e) => {
   const currentVideo = videoRefs.value[e.detail[0].realIndex];
   currentVideo.setVolume(isMuted.value ? 0 : 1);
   currentVideo.play();
+  hasStartedPlaying.value = true;
   const currentIndex = e.detail[0].realIndex;
   currentVideo.on('ended', () => {
     const nextIndex = currentIndex + 1;
@@ -266,6 +276,12 @@ iframe {
   border-width: 8px;
   border-style: solid;
   border-color: transparent transparent white transparent;
+}
+.hide-unless-hovered {
+  opacity: 0;
+}
+swiper-slide > div:hover .hide-unless-hovered {
+  opacity: 1;
 }
 </style>
 
