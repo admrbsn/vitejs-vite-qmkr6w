@@ -41,19 +41,18 @@
       <swiper-slide
         v-for="(slide, index) in slides"
         :key="index"
-        :class="{ 'has-started-playing': hasStartedPlaying }"
         class="-mt-16"
       >
         <div :id="'video-' + index">
           <button
             @click="togglePlay"
+            :class="{ 'hide-unless-hovered': hasStartedPlaying }"
             class="
-              play-pause
               absolute
               top-1/2
               right-0
               left-0
-              hidden
+              flex
               w-16
               h-16
               items-center
@@ -227,7 +226,6 @@ const onSlideChange = (e) => {
   console.log('slide changed');
   const currentVideo = videoRefs.value[e.detail[0].realIndex];
   playVideo(currentVideo);
-  isPlaying.value = true;
   hasStartedPlaying.value = true;
   const currentIndex = e.detail[0].realIndex;
   currentVideo.on('ended', () => {
@@ -291,14 +289,10 @@ iframe {
   border-style: solid;
   border-color: transparent transparent white transparent;
 }
-.play-pause {
-  display: none;
-}
-.has-started-playing .play-pause {
-  display: flex !important;
+.hide-unless-hovered {
   opacity: 0;
 }
-swiper-slide.has-started-playing > div:hover .play-pause {
+swiper-slide > div:hover .hide-unless-hovered {
   opacity: 1;
 }
 </style>
