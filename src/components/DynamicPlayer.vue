@@ -85,6 +85,8 @@ register();
 // Mobile unmute helper
 const showOverlay = ref(false);
 
+const userInteracted = ref(false);
+
 // Ref for images
 const playImage = ref('play.svg');
 const pauseImage = ref('pause.svg');
@@ -110,6 +112,10 @@ const slides = [
 ];
 
 onMounted(() => {
+  window.addEventListener('touchstart', () => {
+    userInteracted.value = true;
+  });
+
   // Show tooltip helper to unmute on mobile
   showOverlay.value = window.innerWidth < 768 && isMuted.value;
   window.addEventListener('resize', () => {
@@ -151,8 +157,12 @@ onMounted(() => {
         const nextIndex = (index + 1) % slides.length;
         const nextVideo = videoRefs.value[nextIndex];
         if (nextVideo) {
-          nextVideo.setMuted(isMuted.value);
-          nextVideo.play();
+          // Check if the user has interacted with the page
+          if (userInteracted) {
+            nextVideo.setMuted(isMuted.value);
+            nextVideo.play();
+          }
+          // Else consider adding some sort of visual cue or fallback action
           isPlaying.value = true;
           swiperEl.value.swiper.slideNext();
         } else {
