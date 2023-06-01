@@ -304,6 +304,9 @@ iframe {
 .hide-unless-hovered {
   opacity: 0;
 }
+swiper-slide {
+  background-color: hotpink;
+}
 swiper-slide > div:hover .hide-unless-hovered {
   opacity: 1;
 }
