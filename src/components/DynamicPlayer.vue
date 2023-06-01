@@ -182,7 +182,7 @@ const playVideo = (video) => {
         error.name === 'NotAllowedError' ||
         error.name === 'NotSupportedError'
       ) {
-        //video.setVolume(0);
+        video.setVolume(0);
         video.play();
       }
     });
@@ -200,6 +200,19 @@ const togglePlay = () => {
         playVideo(currentVideo);
         isPlaying.value = true;
         hasStartedPlaying.value = true;
+
+        const currentIndex = swiperEl.value.swiper.realIndex;
+        currentVideo.on('ended', () => {
+          const nextIndex = currentIndex + 1;
+          const nextVideo = videoRefs.value[nextIndex];
+          if (nextVideo) {
+            currentVideo.setVolume(0); // TODO: for some reason, isMuted wasn't working with the vimeo player api
+            playVideo(nextVideo);
+            swiperEl.value.swiper.slideNext();
+          } else {
+            swiperEl.value.swiper.slideTo(0);
+          }
+        });
       }
     }
   }
