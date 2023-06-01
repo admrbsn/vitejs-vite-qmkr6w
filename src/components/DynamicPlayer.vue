@@ -210,13 +210,14 @@ const toggleMute = () => {
     const currentVideo = videoRefs.value[swiperEl.value.swiper.realIndex];
     if (currentVideo) {
       if (isMuted.value) {
-        currentVideo.setVolume(1); // TODO: for some reason, isMuted wasn't working with the vimeo player api
+        currentVideo.setVolume(1);
         isMuted.value = false;
       } else {
-        currentVideo.setVolume(0); // TODO: for some reason, isMuted wasn't working with the vimeo player api
+        currentVideo.setVolume(0);
         isMuted.value = true;
       }
       showOverlay.value = window.innerWidth < 768 && isMuted.value;
+      playVideo(currentVideo);
     }
   }
 };
