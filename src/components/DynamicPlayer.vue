@@ -150,7 +150,7 @@ onMounted(() => {
         const nextIndex = (index + 1) % slides.length;
         const nextVideo = videoRefs.value[nextIndex];
         if (nextVideo) {
-          nextVideo.setMuted(isMuted.value);
+          nextVideo.setVolume(isMuted.value ? 0 : 1);
           nextVideo.play();
           isPlaying.value = true;
           swiperEl.value.swiper.slideNext();
@@ -231,7 +231,7 @@ const onSlideChange = (e) => {
     const nextIndex = currentIndex + 1;
     const nextVideo = videoRefs.value[nextIndex];
     if (nextVideo) {
-      nextVideo.setVolume(isMuted.value ? 0 : 1);
+      currentVideo.setVolume(0); // TODO: for some reason, isMuted wasn't working with the vimeo player api
       playVideo(nextVideo);
       swiperEl.value.swiper.slideNext();
     } else {
