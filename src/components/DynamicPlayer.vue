@@ -140,7 +140,6 @@ onMounted(() => {
       width: 600,
       height: 400,
       autoplay: false,
-      muted: true,
     });
     videoRefs.value.push(markRaw(player));
 
