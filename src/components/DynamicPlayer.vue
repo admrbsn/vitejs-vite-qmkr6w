@@ -140,6 +140,7 @@ onMounted(() => {
       width: 600,
       height: 400,
       autoplay: false,
+      muted: true,
     });
     videoRefs.value.push(markRaw(player));
 
@@ -196,9 +197,11 @@ const togglePlay = () => {
         currentVideo.pause();
         isPlaying.value = false;
       } else {
-        playVideo(currentVideo);
-        isPlaying.value = true;
-        hasStartedPlaying.value = true;
+        setTimeout(() => {
+          playVideo(currentVideo);
+          isPlaying.value = true;
+          hasStartedPlaying.value = true;
+        }, 100);
       }
     }
   }
